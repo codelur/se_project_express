@@ -10,20 +10,20 @@ const {
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      return res.status(OK_STATUS_CODE).send({ data: users });
+      res.status(OK_STATUS_CODE).send({ data: users });
     })
     .catch((err) => {
       errorHandling(res, err, "User Id");
     });
 };
 
-//POST /users
+//  POST /users
 
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
   User.create({ name, avatar })
     .then((user) => {
-      return res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: user });
+      res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: user });
     })
     .catch((err) => {
       errorHandling(res, err, "User Id");
@@ -33,23 +33,23 @@ const createUser = (req, res) => {
 const findUser = async (userId) => {
   try {
     await User.findById(userId).orFail();
-    console.log("User found: " + userId);
+    console.log(`User found: ${userId}`);
     return true;
   } catch (err) {
     console.log(err);
-    console.log("User not found: " + userId);
+    console.log(`User not found:  ${userId}`);
     return false;
   }
 };
 
-//GET /users/:userId
+//  GET /users/:userId
 
 const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail()
     .then((user) => {
-      return res.status(OK_STATUS_CODE).send({ data: user });
+      res.status(OK_STATUS_CODE).send({ data: user });
     })
     .catch((err) => {
       errorHandling(res, err, "User Id");

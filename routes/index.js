@@ -11,7 +11,7 @@ const clothingItemRouter = require("./clothingItems");
 
 router.use("/items", clothingItemRouter);
 
-router.use((req, res, next) => {
+router.use((req, res) => {
   res.status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE).send({
     message: RESOURCE_NOT_FOUND_MESSAGE,
   });

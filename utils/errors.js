@@ -1,9 +1,9 @@
-//ERRORS
+//  ERRORS
 
 const BAD_REQUEST_ERROR_STATUS_CODE = 400;
 const INTERNAL_SERVER_ERROR_STATUS_CODE = 500;
 const RESOURCE_NOT_FOUND_ERROR_STATUS_CODE = 404;
-//SUCCESS
+//  SUCCES
 
 const OK_STATUS_CODE = 200;
 const RESOURCE_CREATED_STATUS_CODE = 201;
@@ -20,12 +20,12 @@ const errorHandling = (res, err, elem) => {
       .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
   }
 
-  if (err.name == "ValidationError")
+  if (err.name === "ValidationError")
     return res
       .status(BAD_REQUEST_ERROR_STATUS_CODE)
       .send({ message: err.message });
 
-  if (err.name == "CastError")
+  if (err.name === "CastError")
     return res
       .status(BAD_REQUEST_ERROR_STATUS_CODE)
       .send({ message: `${elem} is not in a valid format` });

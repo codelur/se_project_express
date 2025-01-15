@@ -1,5 +1,3 @@
-const _id = "m";
-
 module.exports = {
   env: {
     es2021: true,
@@ -24,7 +22,7 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    "no-console": ["error", { allow: ["warn"] }],
-    "no-underscore-dangle": "allow",
+    "no-console": "off",
+    "no-underscore-dangle": "off",
   },
 };
