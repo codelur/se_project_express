@@ -28,31 +28,37 @@ const getItems = (req, res) => {
 
 const createItem = async (req, res) => {
   const { name, weather, imageUrl, owner, likes, createdAt } = req.body;
-  const userExists = await findUser(owner);
-  console.log(userExists);
-  if (userExists) {
-    ClothingItem.create({ name, weather, imageUrl, owner, likes, createdAt })
-      .then((clothingItem) => {
+  /*const userExists = await findUser(owner);
+  if (userExists) {*/
+  ClothingItem.create({
+    name,
+    weather,
+    imageUrl,
+    owner: req.user._id,
+    likes,
+    createdAt,
+  })
+    .then((clothingItem) => {
+      return res
+        .status(RESOURCE_CREATED_STATUS_CODE)
+        .send({ data: clothingItem });
+    })
+    .catch((err) => {
+      console.log(err);
+      if (err.name == "ValidationError")
         return res
-          .status(RESOURCE_CREATED_STATUS_CODE)
-          .send({ data: clothingItem });
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.name == "ValidationError")
-          return res
-            .status(BAD_REQUEST_ERROR_STATUS_CODE)
-            .send({ message: err.message });
-
-        return res
-          .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+          .status(BAD_REQUEST_ERROR_STATUS_CODE)
           .send({ message: err.message });
-      });
-  } else {
+
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+        .send({ message: err.message });
+    });
+  /*} else {
     return res
       .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
       .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
-  }
+  }*/
 };
 
 // DELETE /items/:itemId
@@ -89,12 +95,23 @@ const likeItem = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true }
   )
+    .orFail()
     .then((clothingItem) => {
       console.log("LIKED");
       return res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
       console.log(err);
+      if (err.name === "DocumentNotFoundError") {
+        // Send a 404 Not Found response
+        return res
+          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
+          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
+      }
+      if (err.name == "CastError")
+        return res
+          .status(BAD_REQUEST_ERROR_STATUS_CODE)
+          .send({ message: "Item Id is not in a valid format" });
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
         .send({ message: err.message });
@@ -107,11 +124,21 @@ const dislikeItem = (req, res) => {
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true }
   )
+    .orFail()
     .then((clothingItem) => {
       return res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      console.log(err);
+      if (err.name === "DocumentNotFoundError") {
+        // Send a 404 Not Found response
+        return res
+          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
+          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
+      }
+      if (err.name == "CastError")
+        return res
+          .status(BAD_REQUEST_ERROR_STATUS_CODE)
+          .send({ message: "Item Id is not in a valid format" });
       return res
         .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
         .send({ message: err.message });
