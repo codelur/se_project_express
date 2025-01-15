@@ -29,8 +29,6 @@ const createItem = async (req, res) => {
     weather,
     imageUrl,
     owner: req.user._id,
-    likes,
-    createdAt,
   })
     .then((clothingItem) => {
       res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: clothingItem });
