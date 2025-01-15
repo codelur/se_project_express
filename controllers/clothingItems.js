@@ -1,4 +1,4 @@
-const ClothingItem = require("../models/clothingItem");
+const ClothingItem = require("../models/clothingitem");
 //  const { findUser } = require("./users");
 const {
   RESOURCE_CREATED_STATUS_CODE,
