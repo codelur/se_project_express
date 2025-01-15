@@ -5,6 +5,7 @@ const {
   RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
+  RESOURCE_NOT_FOUND_MESSAGE,
 } = require("../utils/errors");
 
 // GET /users
@@ -70,7 +71,7 @@ const getUser = (req, res) => {
         // Send a 404 Not Found response
         return res
           .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: "User not found" });
+          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
       }
       if (err.name == "CastError")
         return res

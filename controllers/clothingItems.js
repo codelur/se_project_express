@@ -6,8 +6,9 @@ const {
   RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
+  RESOURCE_NOT_FOUND_MESSAGE,
 } = require("../utils/errors");
-
+const mongoose = require("mongoose");
 // GET /items
 
 const getItems = (req, res) => {
@@ -50,7 +51,7 @@ const createItem = async (req, res) => {
   } else {
     return res
       .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-      .send({ message: "Owner not found" });
+      .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
   }
 };
 
@@ -70,7 +71,7 @@ const deleteItem = (req, res) => {
         // Send a 404 Not Found response
         return res
           .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: "Item not found" });
+          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
       }
       if (err.name == "CastError")
         return res
@@ -82,4 +83,39 @@ const deleteItem = (req, res) => {
     });
 };
 
-module.exports = { getItems, createItem, deleteItem };
+const likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
+    { new: true }
+  )
+    .then((clothingItem) => {
+      console.log("LIKED");
+      return res.status(OK_STATUS_CODE).send({ data: clothingItem });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+        .send({ message: err.message });
+    });
+};
+
+const dislikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } }, // remove _id from the array
+    { new: true }
+  )
+    .then((clothingItem) => {
+      return res.status(OK_STATUS_CODE).send({ data: clothingItem });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res
+        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+        .send({ message: err.message });
+    });
+};
+
+module.exports = { getItems, createItem, deleteItem, likeItem, dislikeItem };
