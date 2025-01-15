@@ -1,12 +1,9 @@
 const ClothingItem = require("../models/clothingItem");
 const { findUser } = require("./users");
 const {
-  BAD_REQUEST_ERROR_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
-  RESOURCE_NOT_FOUND_MESSAGE,
+  errorHandling,
 } = require("../utils/errors");
 const mongoose = require("mongoose");
 // GET /items
@@ -17,10 +14,7 @@ const getItems = (req, res) => {
       return res.status(OK_STATUS_CODE).send({ data: items });
     })
     .catch((err) => {
-      console.log(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "Item Id");
     });
 };
 
@@ -44,15 +38,7 @@ const createItem = async (req, res) => {
         .send({ data: clothingItem });
     })
     .catch((err) => {
-      console.log(err);
-      if (err.name == "ValidationError")
-        return res
-          .status(BAD_REQUEST_ERROR_STATUS_CODE)
-          .send({ message: err.message });
-
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "Item Id");
     });
   /*} else {
     return res
@@ -72,20 +58,7 @@ const deleteItem = (req, res) => {
       return res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      console.log(err);
-      if (err.name === "DocumentNotFoundError") {
-        // Send a 404 Not Found response
-        return res
-          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
-      }
-      if (err.name == "CastError")
-        return res
-          .status(BAD_REQUEST_ERROR_STATUS_CODE)
-          .send({ message: "Item Id is not in a valid format" });
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "Item Id");
     });
 };
 
@@ -101,20 +74,7 @@ const likeItem = (req, res) => {
       return res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      console.log(err);
-      if (err.name === "DocumentNotFoundError") {
-        // Send a 404 Not Found response
-        return res
-          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
-      }
-      if (err.name == "CastError")
-        return res
-          .status(BAD_REQUEST_ERROR_STATUS_CODE)
-          .send({ message: "Item Id is not in a valid format" });
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "Item Id");
     });
 };
 
@@ -129,19 +89,7 @@ const dislikeItem = (req, res) => {
       return res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        // Send a 404 Not Found response
-        return res
-          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
-      }
-      if (err.name == "CastError")
-        return res
-          .status(BAD_REQUEST_ERROR_STATUS_CODE)
-          .send({ message: "Item Id is not in a valid format" });
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "Item Id");
     });
 };
 

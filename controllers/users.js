@@ -1,11 +1,8 @@
 const User = require("../models/user");
 const {
-  BAD_REQUEST_ERROR_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
-  RESOURCE_NOT_FOUND_MESSAGE,
+  errorHandling,
 } = require("../utils/errors");
 
 // GET /users
@@ -16,10 +13,7 @@ const getUsers = (req, res) => {
       return res.status(OK_STATUS_CODE).send({ data: users });
     })
     .catch((err) => {
-      console.log(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "User Id");
     });
 };
 
@@ -32,15 +26,7 @@ const createUser = (req, res) => {
       return res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: user });
     })
     .catch((err) => {
-      console.log(err);
-      if (err.name == "ValidationError")
-        return res
-          .status(BAD_REQUEST_ERROR_STATUS_CODE)
-          .send({ message: err.message });
-
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "User Id");
     });
 };
 
@@ -66,20 +52,7 @@ const getUser = (req, res) => {
       return res.status(OK_STATUS_CODE).send({ data: user });
     })
     .catch((err) => {
-      console.log(err);
-      if (err.name === "DocumentNotFoundError") {
-        // Send a 404 Not Found response
-        return res
-          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
-      }
-      if (err.name == "CastError")
-        return res
-          .status(BAD_REQUEST_ERROR_STATUS_CODE)
-          .send({ message: "User Id is not in a valid format" });
-      return res
-        .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-        .send({ message: err.message });
+      errorHandling(res, err, "User Id");
     });
 };
 

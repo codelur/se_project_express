@@ -11,11 +11,31 @@ const RESOURCE_CREATED_STATUS_CODE = 201;
 const RESOURCE_NOT_FOUND_MESSAGE =
   "Resource not found. The requested resource could not be found on this server.";
 
+const errorHandling = (res, err, elem) => {
+  console.log(err);
+  if (err.name === "DocumentNotFoundError") {
+    // Send a 404 Not Found response
+    return res
+      .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
+      .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
+  }
+
+  if (err.name == "ValidationError")
+    return res
+      .status(BAD_REQUEST_ERROR_STATUS_CODE)
+      .send({ message: err.message });
+
+  if (err.name == "CastError")
+    return res
+      .status(BAD_REQUEST_ERROR_STATUS_CODE)
+      .send({ message: `${elem} is not in a valid format` });
+
+  return res
+    .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+    .send({ message: err.message });
+};
 module.exports = {
-  BAD_REQUEST_ERROR_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
-  RESOURCE_NOT_FOUND_MESSAGE,
+  errorHandling,
 };
