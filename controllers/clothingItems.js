@@ -21,7 +21,7 @@ const getItems = (req, res) => {
 // POST /items
 
 const createItem = async (req, res) => {
-  const { name, weather, imageUrl, likes, createdAt } = req.body;
+  const { name, weather, imageUrl } = req.body;
   /*  const userExists = await findUser(owner);
   if (userExists) { */
   ClothingItem.create({

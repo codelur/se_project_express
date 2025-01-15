@@ -35,6 +35,8 @@ const errorHandling = (res, err, elem) => {
     .send({ message: err.message });
 };
 module.exports = {
+  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
+  RESOURCE_NOT_FOUND_MESSAGE,
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
   errorHandling,
