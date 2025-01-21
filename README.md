@@ -21,7 +21,7 @@ This project is the back-end implementation for the WTWR (What To Wear?) applica
 
 - **Error Handling:**
 
-  - Handles the following HTTP error codes:
+  - Handles the following HTTP error codes on the app:
     - **400**: Bad Request (e.g., validation errors)
     - **404**: Resource Not Found
     - **500**: Internal Server Error
