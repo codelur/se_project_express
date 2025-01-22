@@ -57,7 +57,7 @@ The project is organized into routes, controllers, and models:
 
 ## Future Goals
 
-Implement user authentication and authorization.
+Implement user regiustration, authentication and authorization.
 Extend the API to include additional features.
 
 ## Contributions
