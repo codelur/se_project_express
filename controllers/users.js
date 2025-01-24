@@ -1,7 +1,12 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = require("../utils/config");
+
 const User = require("../models/user");
 const {
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
+  UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE,
   errorHandling,
 } = require("../utils/errors");
 
@@ -20,13 +25,22 @@ const getUsers = (req, res) => {
 //  POST /users
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
-  User.create({ name, avatar })
-    .then((user) => {
-      res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: user });
+  const { name, avatar, email, password } = req.body;
+  console.log(password);
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.create({ name, avatar, email, password: hash })
+        .then((createdUser) => {
+          res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: createdUser });
+        })
+        .catch((err) => {
+          errorHandling(res, err, "User Id");
+        });
     })
     .catch((err) => {
-      errorHandling(res, err, "User Id");
+      console.error("Error hashing password:", err);
+      // Handle password hashing error
     });
 };
 
@@ -44,8 +58,8 @@ const findUser = async (userId) => {
 
 //  GET /users/:userId
 
-const getUser = (req, res) => {
-  const { userId } = req.params;
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
   User.findById(userId)
     .orFail()
     .then((user) => {
@@ -56,4 +70,49 @@ const getUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUser, findUser };
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      // authentication error
+      res
+        .status(UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE)
+        .send({ message: err.toString() });
+    });
+};
+
+const updateProfile = (req, res) => {
+  const userId = req.user._id;
+  const { name, avatar } = req.body;
+
+  User.findOneAndUpdate(
+    { _id: userId },
+    { name, avatar },
+    { new: true, runValidators: true, context: "query" }
+  )
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: "User not found" });
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      errorHandling(res, err, "User Id");
+    });
+};
+
+module.exports = {
+  getUsers,
+  createUser,
+  getCurrentUser,
+  findUser,
+  login,
+  updateProfile,
+};
