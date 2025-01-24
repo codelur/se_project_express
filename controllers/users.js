@@ -6,7 +6,9 @@ const User = require("../models/user");
 const {
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
-  UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE,
+  CONFLICT_ERROR_STATUS_CODE,
+  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
+  MONGODB_DUPLICATE_ERROR_STATUS_CODE,
   errorHandling,
 } = require("../utils/errors");
 
@@ -26,22 +28,34 @@ const getUsers = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-  console.log(password);
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => {
-      User.create({ name, avatar, email, password: hash })
-        .then((createdUser) => {
-          res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: createdUser });
-        })
-        .catch((err) => {
-          errorHandling(res, err, "User Id");
-        });
-    })
-    .catch((err) => {
-      console.error("Error hashing password:", err);
-      // Handle password hashing error
-    });
+  User.findOne({ email }).then((user) => {
+    if (user) {
+      res
+        .status(CONFLICT_ERROR_STATUS_CODE)
+        .send({ error: "Email already exists." });
+      return;
+    }
+    bcrypt
+      .hash(password, 10)
+      .then((hash) => {
+        User.create({ name, avatar, email, password: hash })
+          .then((createdUser) => {
+            res
+              .status(RESOURCE_CREATED_STATUS_CODE)
+              .send({ data: createdUser });
+          })
+          .catch((err) => {
+            if (err.code === MONGODB_DUPLICATE_ERROR_STATUS_CODE)
+              res
+                .status(CONFLICT_ERROR_STATUS_CODE)
+                .send({ message: "The email exists already." });
+          });
+      })
+      .catch((err) => {
+        console.log("Error");
+        res.status(RESOURCE_CREATED_STATUS_CODE).send({ message: err.message });
+      });
+  });
 };
 
 const findUser = async (userId) => {
@@ -81,10 +95,7 @@ const login = async (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      // authentication error
-      res
-        .status(UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE)
-        .send({ message: err.toString() });
+      errorHandling(res, err, "");
     });
 };
 
@@ -99,7 +110,9 @@ const updateProfile = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: "User not found" });
+        res
+          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
+          .send({ message: "User not found" });
       }
       res.send(user);
     })
