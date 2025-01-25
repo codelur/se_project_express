@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
-const { UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE } = require("../utils/errors");
+const {
+  UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE,
+  BAD_REQUEST_ERROR_STATUS_CODE,
+} = require("../utils/errors");
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, minLength: 2, maxLength: 30 },
@@ -40,6 +43,11 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
   return this.findOne({ email })
     .select("+password")
     .then((user) => {
+      if (!email || !password) {
+        const error = new Error("The request is missing email or password");
+        error.status = 400;
+        return Promise.reject(error);
+      }
       if (!user) {
         const error = new Error("Incorrect email or password");
         error.status = UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE;

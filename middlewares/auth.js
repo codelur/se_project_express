@@ -4,10 +4,11 @@ const { UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE } = require("../utils/errors");
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
-  if (!authorization || !authorization.startsWith("Bearer"))
+  if (!authorization || !authorization.startsWith("Bearer")) {
     return res
       .status(UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE)
       .send({ message: "Authorization required" });
+  }
 
   const token = authorization.replace("Bearer ", "");
   let payload;
