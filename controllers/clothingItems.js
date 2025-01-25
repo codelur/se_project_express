@@ -3,7 +3,7 @@ const ClothingItem = require("../models/clothingItem");
 const {
   FORBIDDEN_ACCESS_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,
-  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
+  DOCUMENT_NOT_FOUND_ERROR,
   OK_STATUS_CODE,
   errorHandling,
 } = require("../utils/errors");
@@ -46,17 +46,15 @@ const deleteItem = (req, res) => {
   ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
-        res
-          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: "The item doesnt exist." });
+        const err = new Error();
+        err.name = DOCUMENT_NOT_FOUND_ERROR;
+        errorHandling(res, err);
         return;
       }
       if (item.owner.toString() !== userId) {
-        console.log(item.owner);
-        console.log(userId);
-        res
-          .status(FORBIDDEN_ACCESS_ERROR_STATUS_CODE)
-          .send({ message: "You cannot delete this item" });
+        const err = new Error();
+        err.status = FORBIDDEN_ACCESS_ERROR_STATUS_CODE;
+        errorHandling(res, err);
         return;
       }
 
@@ -82,7 +80,6 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((clothingItem) => {
-      console.log("LIKED");
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {

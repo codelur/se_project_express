@@ -45,7 +45,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     .then((user) => {
       if (!email || !password) {
         const error = new Error("The request is missing email or password");
-        error.status = 400;
+        error.status = BAD_REQUEST_ERROR_STATUS_CODE;
         return Promise.reject(error);
       }
       if (!user) {
