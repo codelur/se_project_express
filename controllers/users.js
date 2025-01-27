@@ -7,23 +7,12 @@ const {
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
   BAD_REQUEST_ERROR_STATUS_CODE,
+  INTERNAL_SERVER_ERROR_STATUS_CODE,
   CONFLICT_ERROR_STATUS_CODE,
   RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   MONGODB_DUPLICATE_ERROR_STATUS_CODE,
   errorHandling,
 } = require("../utils/errors");
-
-// GET /users
-
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.status(OK_STATUS_CODE).send({ data: users });
-    })
-    .catch((err) => {
-      errorHandling(res, err, "User Id");
-    });
-};
 
 //  POST /users
 
@@ -59,7 +48,9 @@ const createUser = (req, res) => {
           });
       })
       .catch((err) => {
-        res.status(RESOURCE_CREATED_STATUS_CODE).send({ message: err.message });
+        res
+          .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
+          .send({ message: err.message });
       });
   });
 };
@@ -126,7 +117,6 @@ const updateProfile = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   findUser,
