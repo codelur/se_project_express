@@ -1,6 +1,6 @@
 # WTWR Server
 
-This project is the back-end implementation for the WTWR (What To Wear?) application. The server is built using **Node.js** and **Express.js**, with a **MongoDB** database to store information about users and clothing items. The goal is to create a robust server with an API and user authorization.
+This project implements the back end for the WTWR (What To Wear?) application. It features a **Node.js** and **Express.js** server, utilizing **MongoDB** to store user and clothing item data. The objective is to develop a secure and efficient server with an API and user authentication.
 
 ## Features
 
