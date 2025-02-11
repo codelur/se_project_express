@@ -20,11 +20,12 @@ const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
   User.findOne({ email }).then((user) => {
     if (user) {
-      res
+      return res
         .status(CONFLICT_ERROR_STATUS_CODE)
-        .send({ message: "Email already exists." });
-      return;
+        .json({ message: "Email already exists." });
+
     }
+    console.log("Not found.")
     bcrypt
       .hash(password, 10)
       .then((hash) => {
@@ -48,10 +49,12 @@ const createUser = (req, res) => {
           });
       })
       .catch((err) => {
+
         res
           .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
           .send({ message: err.message });
       });
+      return res;
   });
 };
 
@@ -81,15 +84,16 @@ const getCurrentUser = (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      console.log(user._id);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.send({ token });
+      res.send({ token, name: user.name, avatar: user.avatar, _id: user._id, email:user.email });
     })
     .catch((err) => {
+      console.log(err)
       errorHandling(res, err, "");
     });
 };
@@ -97,7 +101,8 @@ const login = async (req, res) => {
 const updateProfile = (req, res) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
-
+  console.log(name );
+  console.log(avatar);
   User.findOneAndUpdate(
     { _id: userId },
     { name, avatar },

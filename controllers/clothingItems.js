@@ -73,6 +73,7 @@ const deleteItem = (req, res) => {
 };
 
 const likeItem = (req, res) => {
+
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
@@ -80,9 +81,11 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((clothingItem) => {
+      console.log(clothingItem)
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
+      console.log(err)
       errorHandling(res, err, "Item Id");
     });
 };
