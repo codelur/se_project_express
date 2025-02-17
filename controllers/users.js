@@ -18,6 +18,7 @@ const {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+  console.log(avatar)
   User.findOne({ email }).then((user) => {
     if (user) {
       return res
