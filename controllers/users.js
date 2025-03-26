@@ -2,12 +2,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = require("../utils/config");
 const ConflictError = require('../errors/conflict-error');
+const NotFoundError = require('../errors/not-found-err');
 
 const User = require("../models/user");
 const {
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
-  RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
   errorHandling,
 } = require("../utils/errors");
 
@@ -92,9 +92,7 @@ const updateProfile = (req, res, next) => {
   )
     .then((user) => {
       if (!user) {
-        res
-          .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-          .send({ message: "User not found" });
+        next(new NotFoundError("User not found" ));
       }
       res.send(user);
     })

@@ -1,5 +1,3 @@
-//import errorHandler from './middlewares/error-handler.js';
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");

@@ -1,4 +1,4 @@
-//Custom errors
+// Custom errors
 
 const BadRequestError = require('../errors/bad-request-error');
 const ConflictError = require('../errors/conflict-error');
@@ -30,7 +30,6 @@ const RESOURCE_NOT_FOUND_MESSAGE =
   "Resource not found. The requested resource could not be found on this server.";
 
 const UNAUTHORIZED_ACCESS_MESSAGE = "Unauthorized access to this resource.";
-const BAD_REQUEST_MESSAGE = "The request parameters are incorrect.";
 const FORBIDDEN_ACCESS_MESSAGE =
   "The user doesnt have access to this resource2.";
 
