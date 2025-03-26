@@ -16,8 +16,7 @@ const getItems = (req, res, next) => {
       res.status(OK_STATUS_CODE).send({ data: items });
     })
     .catch((err) => {
-      next(err);
-      //errorHandling(res, err, "Item Id");
+      errorHandling(res, err, "Item Id", next);
     });
 };
 
@@ -35,8 +34,7 @@ const createItem = async (req, res, next) => {
       res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      next(err);
-      //errorHandling(res, err, "Item Id");
+      errorHandling(res, err, "Item Id", next);
     });
 };
 
@@ -54,10 +52,9 @@ const deleteItem = (req, res, next) => {
         return;
       }
       if (item.owner.toString() !== userId) {
-        /*const err = new Error();
+        const err = new Error();
         err.status = FORBIDDEN_ACCESS_ERROR_STATUS_CODE;
-        errorHandling(res, err);*/
-        next(err);
+        errorHandling(res, err, next);
         return;
       }
 
@@ -67,13 +64,11 @@ const deleteItem = (req, res, next) => {
           res.status(OK_STATUS_CODE).send({ data: clothingItem });
         })
         .catch((err) => {
-          next(err);
-        //errorHandling(res, err, "Item Id");
+        errorHandling(res, err, "Item Id", next);
         });
     })
     .catch((err) => {
-      next(err);
-      //errorHandling(res, err, "");
+      errorHandling(res, err, "", next);
     });
 };
 
@@ -90,9 +85,7 @@ const likeItem = (req, res, next) => {
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      next(err);
-      //console.log(err)
-      //errorHandling(res, err, "Item Id");
+      errorHandling(res, err, "Item Id", next);
     });
 };
 
@@ -107,8 +100,7 @@ const dislikeItem = (req, res, next) => {
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      next(err);
-      //errorHandling(res, err, "Item Id");
+      errorHandling(res, err, "Item Id", next);
     });
 };
 

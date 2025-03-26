@@ -1,16 +1,13 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = require("../utils/config");
+const ConflictError = require('../errors/conflict-error');
 
 const User = require("../models/user");
 const {
   RESOURCE_CREATED_STATUS_CODE,
   OK_STATUS_CODE,
-  BAD_REQUEST_ERROR_STATUS_CODE,
-  INTERNAL_SERVER_ERROR_STATUS_CODE,
-  CONFLICT_ERROR_STATUS_CODE,
   RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
-  MONGODB_DUPLICATE_ERROR_STATUS_CODE,
   errorHandling,
 } = require("../utils/errors");
 
@@ -18,15 +15,10 @@ const {
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
-  console.log(avatar)
   User.findOne({ email }).then((user) => {
     if (user) {
-      return res
-        .status(CONFLICT_ERROR_STATUS_CODE)
-        .json({ message: "Email already exists." });
-
+      return next(new ConflictError("Email already exists."))
     }
-    console.log("Not found.")
     bcrypt
       .hash(password, 10)
       .then((hash) => {
@@ -39,21 +31,11 @@ const createUser = (req, res, next) => {
               .send({ data: userpayload });
           })
           .catch((err) => {
-            if (err.code === MONGODB_DUPLICATE_ERROR_STATUS_CODE)
-              res
-                .status(CONFLICT_ERROR_STATUS_CODE)
-                .send({ message: "The email exists already." });
-            else
-              res
-                .status(BAD_REQUEST_ERROR_STATUS_CODE)
-                .send({ message: err.message });
+            errorHandling(res, err, "User Id", next);
           });
       })
       .catch((err) => {
         next(err);
-        /*res
-          .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-          .send({ message: err.message });*/
       });
       return res;
   });
@@ -79,8 +61,7 @@ const getCurrentUser = (req, res, next) => {
       res.status(OK_STATUS_CODE).send({ data: user });
     })
     .catch((err) => {
-      next(err);
-      //errorHandling(res, err, "User Id");
+      errorHandling(res, err, "User Id", next);
     });
 };
 
@@ -95,17 +76,15 @@ const login = async (req, res, next) => {
       res.send({ token, name: user.name, avatar: user.avatar, _id: user._id, email:user.email });
     })
     .catch((err) => {
-      next(err);
-      //console.log(err)
-      //errorHandling(res, err, "");
+      errorHandling(res, err, "", next);
     });
 };
 
 const updateProfile = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
-  console.log(name );
-  console.log(avatar);
+  console.log(`Updating profile: ${name} ${avatar}` );
+
   User.findOneAndUpdate(
     { _id: userId },
     { name, avatar },
@@ -120,8 +99,7 @@ const updateProfile = (req, res, next) => {
       res.send(user);
     })
     .catch((err) => {
-      next(err);
-      //errorHandling(res, err, "User Id");
+      errorHandling(res, err, "User Id", next);
     });
 };
 

@@ -1,3 +1,11 @@
+//Custom errors
+
+const BadRequestError = require('../errors/bad-request-error');
+const ConflictError = require('../errors/conflict-error');
+const ForbiddenError = require('../errors/forbidden-error');
+
+const UnauthorizedError = require('../errors/unauthorized-error');
+const NotFoundError = require('../errors/not-found-err');
 //  ERRORS
 
 const BAD_REQUEST_ERROR_STATUS_CODE = 400;
@@ -9,6 +17,8 @@ const CONFLICT_ERROR_STATUS_CODE = 409;
 const INTERNAL_SERVER_ERROR_STATUS_CODE = 500;
 
 const MONGODB_DUPLICATE_ERROR_STATUS_CODE = 11000;
+
+
 
 //  SUCCES
 
@@ -22,7 +32,7 @@ const RESOURCE_NOT_FOUND_MESSAGE =
 const UNAUTHORIZED_ACCESS_MESSAGE = "Unauthorized access to this resource.";
 const BAD_REQUEST_MESSAGE = "The request parameters are incorrect.";
 const FORBIDDEN_ACCESS_MESSAGE =
-  "The user doesnt have access to this resource.";
+  "The user doesnt have access to this resource2.";
 
 // ERROR NAMES
 
@@ -30,38 +40,33 @@ const DOCUMENT_NOT_FOUND_ERROR = "DocumentNotFoundError";
 const VALIDATION_ERROR = "ValidationError";
 const CAST_ERROR = "CastError";
 
-const errorHandling = (res, err, elem) => {
+const errorHandling = (res, err, elem, next) => {
+
+  if (err.code === MONGODB_DUPLICATE_ERROR_STATUS_CODE)
+    return next(new ConflictError("The email exists already."))
+
   if (err.name === DOCUMENT_NOT_FOUND_ERROR) {
     // Send a 404 Not Found response
-    return res
-      .status(RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
-      .send({ message: RESOURCE_NOT_FOUND_MESSAGE });
+    return next(new NotFoundError(RESOURCE_NOT_FOUND_MESSAGE));
   }
 
   if (err.name === VALIDATION_ERROR)
-    return res
-      .status(BAD_REQUEST_ERROR_STATUS_CODE)
-      .send({ message: err.message });
+    return next(new BadRequestError('The validation failed'));
 
   if (err.name === CAST_ERROR)
-    return res
-      .status(BAD_REQUEST_ERROR_STATUS_CODE)
-      .send({ message: `${elem} is not in a valid format` });
+    return next(new BadRequestError(`${elem} is not in a valid format`));
 
   if (err.status === UNAUTHORIZED_ACCESS_ERROR_STATUS_CODE)
-    return res
-      .status(err.status)
-      .send({ message: UNAUTHORIZED_ACCESS_MESSAGE });
+    return next(new UnauthorizedError(UNAUTHORIZED_ACCESS_MESSAGE));
 
   if (err.status === BAD_REQUEST_ERROR_STATUS_CODE)
-    return res.status(err.status).send({ message: BAD_REQUEST_MESSAGE });
+    return next(new BadRequestError(`${elem} is not in a valid format`));
 
   if (err.status === FORBIDDEN_ACCESS_ERROR_STATUS_CODE)
-    return res.status(err.status).send({ message: FORBIDDEN_ACCESS_MESSAGE });
+    return next(new ForbiddenError(FORBIDDEN_ACCESS_MESSAGE));
 
-  return res
-    .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-    .send({ message: err.message });
+  return next(err);
+
 };
 module.exports = {
   RESOURCE_NOT_FOUND_ERROR_STATUS_CODE,
