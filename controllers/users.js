@@ -16,7 +16,7 @@ const {
 
 //  POST /users
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   console.log(avatar)
   User.findOne({ email }).then((user) => {
@@ -50,10 +50,10 @@ const createUser = (req, res) => {
           });
       })
       .catch((err) => {
-
-        res
+        next(err);
+        /*res
           .status(INTERNAL_SERVER_ERROR_STATUS_CODE)
-          .send({ message: err.message });
+          .send({ message: err.message });*/
       });
       return res;
   });
@@ -70,7 +70,7 @@ const findUser = async (userId) => {
 
 //  GET /users/:userId
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
@@ -79,11 +79,12 @@ const getCurrentUser = (req, res) => {
       res.status(OK_STATUS_CODE).send({ data: user });
     })
     .catch((err) => {
-      errorHandling(res, err, "User Id");
+      next(err);
+      //errorHandling(res, err, "User Id");
     });
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -94,12 +95,13 @@ const login = async (req, res) => {
       res.send({ token, name: user.name, avatar: user.avatar, _id: user._id, email:user.email });
     })
     .catch((err) => {
-      console.log(err)
-      errorHandling(res, err, "");
+      next(err);
+      //console.log(err)
+      //errorHandling(res, err, "");
     });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
   console.log(name );
@@ -118,7 +120,8 @@ const updateProfile = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      errorHandling(res, err, "User Id");
+      next(err);
+      //errorHandling(res, err, "User Id");
     });
 };
 

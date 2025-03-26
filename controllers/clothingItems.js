@@ -10,19 +10,20 @@ const {
 
 // GET /items
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => {
       res.status(OK_STATUS_CODE).send({ data: items });
     })
     .catch((err) => {
-      errorHandling(res, err, "Item Id");
+      next(err);
+      //errorHandling(res, err, "Item Id");
     });
 };
 
 // POST /items
 
-const createItem = async (req, res) => {
+const createItem = async (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   ClothingItem.create({
     name,
@@ -34,13 +35,14 @@ const createItem = async (req, res) => {
       res.status(RESOURCE_CREATED_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      errorHandling(res, err, "Item Id");
+      next(err);
+      //errorHandling(res, err, "Item Id");
     });
 };
 
 // DELETE /items/:itemId
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id;
   ClothingItem.findById(itemId)
@@ -52,9 +54,10 @@ const deleteItem = (req, res) => {
         return;
       }
       if (item.owner.toString() !== userId) {
-        const err = new Error();
+        /*const err = new Error();
         err.status = FORBIDDEN_ACCESS_ERROR_STATUS_CODE;
-        errorHandling(res, err);
+        errorHandling(res, err);*/
+        next(err);
         return;
       }
 
@@ -64,15 +67,17 @@ const deleteItem = (req, res) => {
           res.status(OK_STATUS_CODE).send({ data: clothingItem });
         })
         .catch((err) => {
-          errorHandling(res, err, "Item Id");
+          next(err);
+        //errorHandling(res, err, "Item Id");
         });
     })
     .catch((err) => {
-      errorHandling(res, err, "");
+      next(err);
+      //errorHandling(res, err, "");
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
 
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -85,12 +90,13 @@ const likeItem = (req, res) => {
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      console.log(err)
-      errorHandling(res, err, "Item Id");
+      next(err);
+      //console.log(err)
+      //errorHandling(res, err, "Item Id");
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
@@ -101,7 +107,8 @@ const dislikeItem = (req, res) => {
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
-      errorHandling(res, err, "Item Id");
+      next(err);
+      //errorHandling(res, err, "Item Id");
     });
 };
 
