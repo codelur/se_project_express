@@ -67,6 +67,7 @@ const getCurrentUser = (req, res, next) => {
 
 const login = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(JWT_SECRET)
   return User.findUserByCredentials(email, password)
     .then((user) => {
       console.log(user._id);
@@ -76,6 +77,7 @@ const login = async (req, res, next) => {
       res.send({ token, name: user.name, avatar: user.avatar, _id: user._id, email:user.email });
     })
     .catch((err) => {
+      console.log(err)
       errorHandling(res, err, "", next);
     });
 };
