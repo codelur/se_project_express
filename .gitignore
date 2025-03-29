@@ -8,7 +8,8 @@ node_modules
 
 # Optional npm cache directory
 .npm
-
+*.log
+.env
 # System files and IDE settings folders
 .DS_Store
 .idea
