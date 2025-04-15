@@ -48,13 +48,13 @@ const deleteItem = (req, res, next) => {
       if (!item) {
         const err = new Error();
         err.name = DOCUMENT_NOT_FOUND_ERROR;
-        errorHandling(res, err);
+        errorHandling(res, err, "Item Id", next);
         return;
       }
       if (item.owner.toString() !== userId) {
         const err = new Error();
         err.status = FORBIDDEN_ACCESS_ERROR_STATUS_CODE;
-        errorHandling(res, err, next);
+        errorHandling(res, err, "Item Id", next);
         return;
       }
 

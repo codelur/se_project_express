@@ -1,4 +1,7 @@
 const express = require("express");
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require('celebrate');
@@ -10,6 +13,16 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 
 const app = express();
+
+// limiter of requests
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // in 15 minutes
+  max: 100 // you can make a maximum of 100 requests from one IP
+});
+
+app.use(limiter);
+app.use(helmet());
+
 const { PORT = 3001 } = process.env;
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")

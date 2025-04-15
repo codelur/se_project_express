@@ -64,6 +64,9 @@ const errorHandling = (res, err, elem, next) => {
   if (err.status === FORBIDDEN_ACCESS_ERROR_STATUS_CODE)
     return next(new ForbiddenError(FORBIDDEN_ACCESS_MESSAGE));
 
+  if (err.status === RESOURCE_NOT_FOUND_ERROR_STATUS_CODE)
+    return next(new NotFoundError(RESOURCE_NOT_FOUND_MESSAGE));
+
   return next(err);
 
 };
