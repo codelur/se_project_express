@@ -2,6 +2,15 @@
 
 This project implements the back end for the WTWR (What To Wear?) application. It features a **Node.js** and **Express.js** server, utilizing **MongoDB** to store user and clothing item data. The objective is to develop a secure and efficient server with an API and user authentication.
 
+## Live Demo
+The project is hosted at: https://www.codelurwtwr.jumpingcrab.com/
+
+[Visit the website](https://www.codelurwtwr.jumpingcrab.com/)
+
+### Backend repository:
+[URL](https://api.codelurwtwr.jumpingcrab.com)
+[Repository](https://github.com/codelur/se_project_express)
+
 ## Features
 
 - **User Management:**

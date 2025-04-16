@@ -1,14 +1,16 @@
 const express = require("express");
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require('celebrate');
+
 require('dotenv').config();
+
 const mainRouter = require("./routes");
 const { createUser, login } = require("./controllers/users");
 const errorHandler = require('./middlewares/error-handler');
+const {validate} = require('./middlewares/validation');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 
@@ -43,8 +45,8 @@ app.get('/crash-test', () => {
 
 app.use(requestLogger);
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", validate, login);
+app.post("/signup", validate, createUser);
 
 
 app.use("/", mainRouter);
