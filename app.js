@@ -10,7 +10,7 @@ require('dotenv').config();
 const mainRouter = require("./routes");
 const { createUser, login } = require("./controllers/users");
 const errorHandler = require('./middlewares/error-handler');
-const {validate} = require('./middlewares/validation');
+const {validateSignUp, validateSignIn} = require('./middlewares/validation');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 
@@ -45,8 +45,8 @@ app.get('/crash-test', () => {
 
 app.use(requestLogger);
 
-app.post("/signin", validate, login);
-app.post("/signup", validate, createUser);
+app.post("/signin",  validateSignIn, login);
+app.post("/signup",  validateSignUp, createUser);
 
 
 app.use("/", mainRouter);

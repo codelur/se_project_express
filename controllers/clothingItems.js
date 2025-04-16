@@ -81,7 +81,6 @@ const likeItem = (req, res, next) => {
   )
     .orFail()
     .then((clothingItem) => {
-      console.log(clothingItem)
       res.status(OK_STATUS_CODE).send({ data: clothingItem });
     })
     .catch((err) => {
