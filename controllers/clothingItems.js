@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-//  const { findUser } = require("./users");
+
 const {
   FORBIDDEN_ACCESS_ERROR_STATUS_CODE,
   RESOURCE_CREATED_STATUS_CODE,

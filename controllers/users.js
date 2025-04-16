@@ -41,15 +41,6 @@ const createUser = (req, res, next) => {
   });
 };
 
-const findUser = async (userId) => {
-  try {
-    await User.findById(userId).orFail();
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
 //  GET /users/:userId
 
 const getCurrentUser = (req, res, next) => {
@@ -106,7 +97,6 @@ const updateProfile = (req, res, next) => {
 module.exports = {
   createUser,
   getCurrentUser,
-  findUser,
   login,
   updateProfile,
 };

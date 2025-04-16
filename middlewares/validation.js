@@ -9,7 +9,7 @@ const validateURL = (value, helpers) => {
   return helpers.error('string.uri');
 }
 
-module.exports.validateCardBody =
+module.exports.validate =
   celebrate({
     body: Joi.object().keys({
       weather: Joi.string().valid('hot','warm','cold').required(),
@@ -23,14 +23,16 @@ module.exports.validateCardBody =
         "string.uri": 'the "imageUrl" field must be a valid url',
       }),
     }),
-  })
-
-  module.exports.validateId = celebrate({
     params: Joi.object().keys({
       _id: Joi.string().alphanum().length(24).messages({
         'string.alphanum': 'Id must only contain letters and numbers.',
-        "string.max": 'The maximum length of the "name" field is 24',
-        "string.empty": 'The "name" field must be filled in',
+        "string.max": 'The maximum length of the "id" field is 24',
+        "string.empty": 'The "id" field must be filled in',
       }),
+      itemId: Joi.string().alphanum().length(24).messages({
+        'string.alphanum': 'itemId must only contain letters and numbers.',
+        "string.max": 'The maximum length of the "itemId" field is 24',
+        "string.empty": 'The "itemId" field must be filled in',
+      })
     }),
   });
